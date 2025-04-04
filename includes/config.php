@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 date_default_timezone_set("Europe/London");
 
 try {
-    $con = new PDO("mysql:dbname=fixmyarea;host=localhost", "root", "");
+    $con = new PDO("mysql:dbname=3bit;host=localhost", "root", "");
     $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 } catch (PDOException $e) {
     exit("Connection failed: " . $e->getMessage());
