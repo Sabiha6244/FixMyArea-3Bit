@@ -80,7 +80,7 @@ $issues = $query->fetchAll(PDO::FETCH_ASSOC);
 
     <footer>
         <div class="container">
-            <p>&copy; <?= date("Y"); ?> FixMyArea | Inspired by FixMyStreet</p>
+            <p>&copy; <?= date("Y"); ?> FixMyArea </p>
         </div>
     </footer>
 </body>
