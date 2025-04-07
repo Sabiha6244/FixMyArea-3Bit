@@ -23,118 +23,187 @@ if (empty($_SESSION['csrf_token'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Report an Issue - FixMyArea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/style/style.css">
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY" async defer></script>
+
+    <!-- OpenLayers CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@6.12.0/ol.css" />
+
+    <!-- OpenLayers JS -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@6.12.0/ol.js"></script>
+
 </head>
+
 <body class="dashboard">
 
-<header>
-    <div class="container header-container">
-        <h1 class="site-title">FixMyArea</h1>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="issues.php">My Issues</a></li>
-                <li><a href="report.php" class="active">Report an Issue</a></li>
-                <li><a href="logout.php">Logout</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
+    <header>
+        <div class="container header-container">
+            <h1 class="site-title">FixMyArea</h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="issues.php">My Issues</a></li>
+                    <li><a href="report.php" class="active">Report an Issue</a></li>
+                    <li><a href="logout.php">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-<main class="container">
-    <section class="report-section">
-        <h2>Submit a New Issue</h2>
+    <main class="container">
+        <section class="report-section">
+            <h2>Submit a New Issue</h2>
 
-        <?php if (isset($_GET['error'])): ?>
-            <p class="error-message"><?= htmlspecialchars($_GET['error']); ?></p>
-        <?php elseif (isset($_GET['success'])): ?>
-            <p class="success-message">Your issue has been successfully reported!</p>
-        <?php endif; ?>
+            <?php if (isset($_GET['error'])): ?>
+                <p class="error-message"><?= htmlspecialchars($_GET['error']); ?></p>
+            <?php elseif (isset($_GET['success'])): ?>
+                <p class="success-message">Your issue has been successfully reported!</p>
+            <?php endif; ?>
 
-        <form action="../api/report_issue.php" method="post" enctype="multipart/form-data" class="report-form">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
-            <input type="hidden" name="citizen_id" value="<?= htmlspecialchars($citizen_id); ?>">
+            <form action="api/report_issue.php" method="post" enctype="multipart/form-data" class="report-form">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+                <input type="hidden" name="citizen_id" value="<?= htmlspecialchars($citizen_id); ?>">
 
-            <!-- Category Selection -->
-            <label for="category">Issue Category:</label>
-            <select name="category" id="category" required>
-                <option value="" disabled selected>Select a category</option>
-                <option value="Road">Road</option>
-                <option value="Garbage">Garbage</option>
-                <option value="Streetlight">Streetlight</option>
-                <option value="Water">Water</option>
-                <option value="Other">Other</option>
-            </select>
+                <!-- Category Selection -->
+                <label for="category">Issue Category:</label>
+                <select name="category" id="category" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="Road Repair">Potholes, road damage, sidewalk issues</option>
+                    <option value="Sanitation">Garbage collection, public cleanliness</option>
+                    <option value="Utilities">Water, electricity, gas issues</option>
+                    <option value="Public Safety">Street lights, traffic signals, safety hazards</option>
+                </select>
 
-            <!-- Description -->
-            <label for="description">Issue Description:</label>
-            <textarea name="description" id="description" placeholder="Describe the issue in detail..." required></textarea>
+                <!-- Title -->
+                <label for="title">Issue Title:</label>
+                <input type="text" name="title" id="title" placeholder="e.g., Broken streetlight at 5th Ave" required>
 
-            <!-- Image Upload -->
-            <label for="photo">Upload an Image (JPEG, PNG, max 2MB):</label>
-            <input type="file" name="photo" id="photo" accept="image/jpeg, image/png" required>
+                <!-- Description -->
+                <label for="description">Issue Description:</label>
+                <textarea name="description" id="description" placeholder="Describe the issue in detail..." required></textarea>
 
-            <!-- Location Detection -->
-            <label for="location">Detected Location:</label>
-            <input type="text" id="location" name="location" placeholder="Fetching your location..." readonly required>
+                <!-- Image Upload -->
+                <label for="photo">Upload an Image (JPEG, PNG, max 2MB):</label>
+                <input type="file" name="photo" id="photo" accept="image/jpeg, image/png" required>
 
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
+                <!-- Location Detection -->
+                <label for="location">Detected Location:</label>
+                <div style="margin-bottom: 10px;">
+                    <button type="button" class="btn-primary" onclick="detectLocation()">Use My Current Location</button>
+                </div>
+                <input type="text" id="location" name="location" placeholder="Click to detect location" readonly required>
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
 
-            <!-- Google Map Preview -->
-            <div id="map" style="height: 300px; width: 100%; margin-bottom: 20px;"></div>
+                <!-- Map Preview -->
+                <div id="map-container" style="display: none; margin-top: 15px;">
+                    <div id="map" style="height: 300px; width: 100%;"></div>
+                </div>
+                </div>
 
-            <button type="submit" class="btn-primary">Submit Report</button>
-        </form>
-    </section>
-</main>
+                <button type="submit" class="btn-primary">Submit Report</button>
+            </form>
+        </section>
+    </main>
 
-<footer>
-    <div class="container">
-        <p>&copy; <?= date("Y"); ?> FixMyArea</p>
-    </div>
-</footer>
+    <footer>
+        <div class="container">
+            <p>&copy; <?= date("Y"); ?> FixMyArea</p>
+        </div>
+    </footer>
 
-<script>
-let map, marker;
+    <script>
+        function detectLocation() {
+            console.log("Location detection started...");
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
 
-window.onload = () => {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude.toFixed(6);
-                const lng = position.coords.longitude.toFixed(6);
+                    console.log(`Latitude: ${lat}, Longitude: ${lng}`);
 
-                document.getElementById("latitude").value = lat;
-                document.getElementById("longitude").value = lng;
-                document.getElementById("location").value = `${lat}, ${lng}`;
+                    document.getElementById("latitude").value = lat;
+                    document.getElementById("longitude").value = lng;
 
-                // Load Google Map
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: { lat: parseFloat(lat), lng: parseFloat(lng) },
-                    zoom: 15
+                    // Reverse Geocode
+                    try {
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                        const data = await response.json();
+
+                        let address = data.display_name;
+                        console.log("Address:", address); // Add logging to see what you get
+
+                        if (data.address) {
+                            address = `${data.address.road || ''}, ${data.address.suburb || ''}, ${data.address.city || data.address.town || data.address.village || ''}, ${data.address.postcode || ''}`;
+                        }
+
+                        document.getElementById("location").value = address;
+                    } catch (err) {
+                        console.error(err);
+                        document.getElementById("location").value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        alert("Could not fetch address. Showing coordinates instead.");
+                    }
+
+                    // Show Map Container before initializing
+                    const mapContainer = document.getElementById("map-container");
+                    mapContainer.style.display = "block";
+
+                    // Clear any existing map
+                    document.getElementById("map").innerHTML = '';
+
+                    // Coordinates for OpenLayers
+                    const coords = ol.proj.fromLonLat([lng, lat]);
+
+                    const map = new ol.Map({
+                        target: 'map',
+                        layers: [
+                            new ol.layer.Tile({
+                                source: new ol.source.OSM(),
+                            })
+                        ],
+                        view: new ol.View({
+                            center: coords,
+                            zoom: 15
+                        })
+                    });
+
+                    const marker = new ol.Feature({
+                        geometry: new ol.geom.Point(coords),
+                    });
+
+                    const markerStyle = new ol.style.Style({
+                        image: new ol.style.Icon({
+                            anchor: [0.5, 1],
+                            src: 'https://openlayers.org/en/v4.6.5/examples/data/icon.png',
+                        }),
+                    });
+
+                    marker.setStyle(markerStyle);
+
+                    const vectorSource = new ol.source.Vector({
+                        features: [marker]
+                    });
+
+                    const markerLayer = new ol.layer.Vector({
+                        source: vectorSource
+                    });
+
+                    map.addLayer(markerLayer);
+
+                    // Ensure map renders correctly after being made visible
+                    setTimeout(() => {
+                        map.updateSize();
+                    }, 300);
+
+                }, () => {
+                    alert("Failed to fetch your location.");
                 });
-
-                marker = new google.maps.Marker({
-                    position: { lat: parseFloat(lat), lng: parseFloat(lng) },
-                    map: map,
-                    title: "Your Location"
-                });
-            },
-            (error) => {
-                document.getElementById("location").value = "Unable to fetch location.";
+            } else {
+                alert("Geolocation not supported by this browser.");
             }
-        );
-    } else {
-        document.getElementById("location").value = "Geolocation not supported.";
-    }
-};
-</script>
-
-</body>
-</html>
+        }
+    </script>

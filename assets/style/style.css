@@ -564,10 +564,6 @@ nav ul li a:hover {
     background-color: #1f6391;
 }
 
-#map {
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
 
 footer {
     margin-top: 40px;
@@ -607,3 +603,4 @@ footer p {
         margin: 0 10px;
     }
 }
+
