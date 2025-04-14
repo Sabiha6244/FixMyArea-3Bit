@@ -17,12 +17,14 @@ if ($userEmail) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FixMyArea - Community Issue Tracker</title>
     <link rel="stylesheet" href="assets/style/style.css">
 </head>
+
 <body>
 
     <!-- Sidebar Navigation -->
@@ -57,23 +59,23 @@ if ($userEmail) {
             <div class="container">
                 <h2>Report, view, or discuss local problems</h2>
                 <h3>(like potholes, streetlight outages, trash collection problems, and more!)</h3>
-                <p> Citizens face difficulties reporting local issues like broken streetlights, 
-                    potholes, or garbage disposal. Often, they don’t know where to report, 
-                    and the lack of updates makes them feel ignored. Additionally, authorities 
+                <p> Citizens face difficulties reporting local issues like broken streetlights,
+                    potholes, or garbage disposal. Often, they don’t know where to report,
+                    and the lack of updates makes them feel ignored. Additionally, authorities
                     struggle to assign service providers and track issue resolution efficiently.
-                    FixMyArea does send your reports directly to your local council, 
+                    FixMyArea does send your reports directly to your local council,
                     or whichever other authority is responsible for dealing with a problem.
-                    We wanted to make it easier to report problems in your community, 
+                    We wanted to make it easier to report problems in your community,
                     even if you don’t know who those reports should go to.
-                    So we made FixMyArea. 
-                    All you have to do is type in a BD postcode – 
-                    or let the site locate you automatically – 
-                    and describe your problem. 
+                    So we made FixMyArea.
+                    All you have to do is type in a BD postcode –
+                    or let the site locate you automatically –
+                    and describe your problem.
                     Then we send your report to the people whose job it is to fix it.
 
-                    We also publish them online, so that others in the community can see 
+                    We also publish them online, so that others in the community can see
                     what’s already been reported and subscribe to any reports they’re interested in.
-                    </p>
+                </p>
                 <a href="report.php" class="btn">Report an Issue</a>
             </div>
         </section>
@@ -88,25 +90,38 @@ if ($userEmail) {
         <section class="latest-reports">
             <div class="container">
                 <h4>Latest Reported Issues</h4>
-                <ul id="latestIssues">
+                <ul id="latestIssues" class="report-list">
                     <?php
-                    $query = $con->query("SELECT id, title, category, status FROM issues ORDER BY created_at DESC LIMIT 5");
+                    $query = $con->query("SELECT id, title, category, photo_path, status FROM issues ORDER BY created_at DESC LIMIT 5");
                     while ($row = $query->fetch(PDO::FETCH_ASSOC)): ?>
-                        <li>
-                            <strong>
-                                <a href="issues.php?id=<?= htmlspecialchars($row['id']) ?>">
-                                    <?= htmlspecialchars($row['title']) ?>
-                                </a>
-                            </strong> - 
-                            <?= htmlspecialchars($row['category']) ?>
-                            <span class="status <?= strtolower($row['status']) ?>">
-                                (<?= htmlspecialchars($row['status']) ?>)
-                            </span>
+                        <li class="report-item">
+                            <div class="report-image">
+                                <img src="<?= htmlspecialchars($row['photo_path']) ?>"
+                                    alt="<?= htmlspecialchars($row['title']) ?>"
+                                    onclick="openLightbox(this.src)">
+                            </div>
+                            <div class="report-text">
+                                <strong>
+                                    <a href="issues.php?id=<?= htmlspecialchars($row['id']) ?>">
+                                        <?= htmlspecialchars($row['title']) ?>
+                                    </a>
+                                </strong>
+                                - <?= htmlspecialchars($row['category']) ?>
+                                <span class="status <?= strtolower($row['status']) ?>">
+                                    (<?= htmlspecialchars($row['status']) ?>)
+                                </span>
+                            </div>
                         </li>
                     <?php endwhile; ?>
                 </ul>
+
             </div>
         </section>
+
+        <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+            <span class="close-btn">&times;</span>
+            <img id="lightbox-img" src="" alt="Preview">
+        </div>
 
         <footer>
             <div class="container">
@@ -123,5 +138,17 @@ if ($userEmail) {
             }
         }
     </script>
+    <script>
+        function openLightbox(src) {
+            document.getElementById("lightbox-img").src = src;
+            document.getElementById("lightbox").style.display = "flex";
+        }
+
+        function closeLightbox() {
+            document.getElementById("lightbox").style.display = "none";
+        }
+    </script>
+
 </body>
+
 </html>

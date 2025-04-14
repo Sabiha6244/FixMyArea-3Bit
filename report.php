@@ -28,15 +28,13 @@ if (empty($_SESSION['csrf_token'])) {
     <meta charset="UTF-8">
     <title>Report an Issue - FixMyArea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="assets/style/style.css">
-
-
-    <!-- OpenLayers CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@6.12.0/ol.css" />
 
     <!-- OpenLayers JS -->
     <script src="https://cdn.jsdelivr.net/npm/ol@6.12.0/ol.js"></script>
-
 </head>
 
 <body class="dashboard">
@@ -68,7 +66,6 @@ if (empty($_SESSION['csrf_token'])) {
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                 <input type="hidden" name="citizen_id" value="<?= htmlspecialchars($citizen_id); ?>">
 
-                <!-- Category Selection -->
                 <label for="category">Issue Category:</label>
                 <select name="category" id="category" required>
                     <option value="" disabled selected>Select a category</option>
@@ -78,31 +75,26 @@ if (empty($_SESSION['csrf_token'])) {
                     <option value="Public Safety">Street lights, traffic signals, safety hazards</option>
                 </select>
 
-                <!-- Title -->
                 <label for="title">Issue Title:</label>
                 <input type="text" name="title" id="title" placeholder="e.g., Broken streetlight at 5th Ave" required>
 
-                <!-- Description -->
                 <label for="description">Issue Description:</label>
                 <textarea name="description" id="description" placeholder="Describe the issue in detail..." required></textarea>
 
-                <!-- Image Upload -->
                 <label for="photo">Upload an Image (JPEG, PNG, max 2MB):</label>
                 <input type="file" name="photo" id="photo" accept="image/jpeg, image/png" required>
 
-                <!-- Location Detection -->
                 <label for="location">Detected Location:</label>
                 <div style="margin-bottom: 10px;">
                     <button type="button" class="btn-primary" onclick="detectLocation()">Use My Current Location</button>
                 </div>
-                <input type="text" id="location" name="location" placeholder="Click to detect location" readonly required>
+                <input type="text" id="location" name="location" placeholder="Click to detect location" >
                 <input type="hidden" id="latitude" name="latitude">
                 <input type="hidden" id="longitude" name="longitude">
 
                 <!-- Map Preview -->
                 <div id="map-container" style="display: none; margin-top: 15px;">
-                    <div id="map" style="height: 300px; width: 100%;"></div>
-                </div>
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 8px;"></div>
                 </div>
 
                 <button type="submit" class="btn-primary">Submit Report</button>
@@ -116,94 +108,56 @@ if (empty($_SESSION['csrf_token'])) {
         </div>
     </footer>
 
-    <script>
-        function detectLocation() {
-            console.log("Location detection started...");
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
+    <script src="assets/js/script.js"></script>
 
-                    console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+    
+<script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
+<script>
+    const lon = parseFloat("<?= $longitude ?>");
+    const lat = parseFloat("<?= $latitude ?>");
 
-                    document.getElementById("latitude").value = lat;
-                    document.getElementById("longitude").value = lng;
+    const view = new ol.View({
+        center: ol.proj.fromLonLat([lon, lat]),
+        zoom: 15
+    });
 
-                    // Reverse Geocode
-                    try {
-                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-                        const data = await response.json();
+    const marker = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([lon, lat]))
+    });
 
-                        let address = data.display_name;
-                        console.log("Address:", address); // Add logging to see what you get
+    const vectorSource = new ol.source.Vector({
+        features: [marker]
+    });
 
-                        if (data.address) {
-                            address = `${data.address.road || ''}, ${data.address.suburb || ''}, ${data.address.city || data.address.town || data.address.village || ''}, ${data.address.postcode || ''}`;
-                        }
+    const vectorLayer = new ol.layer.Vector({
+        source: vectorSource
+    });
 
-                        document.getElementById("location").value = address;
-                    } catch (err) {
-                        console.error(err);
-                        document.getElementById("location").value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                        alert("Could not fetch address. Showing coordinates instead.");
-                    }
+    const map = new ol.Map({
+        target: 'map',
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            }),
+            vectorLayer
+        ],
+        view: view
+    });
 
-                    // Show Map Container before initializing
-                    const mapContainer = document.getElementById("map-container");
-                    mapContainer.style.display = "block";
+    map.on('click', function (event) {
+        const coords = ol.proj.toLonLat(event.coordinate);
+        const lon = coords[0].toFixed(6);
+        const lat = coords[1].toFixed(6);
 
-                    // Clear any existing map
-                    document.getElementById("map").innerHTML = '';
+        // Update hidden inputs
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lon;
 
-                    // Coordinates for OpenLayers
-                    const coords = ol.proj.fromLonLat([lng, lat]);
+        // Move marker
+        marker.setGeometry(new ol.geom.Point(event.coordinate));
+    });
+</script>
 
-                    const map = new ol.Map({
-                        target: 'map',
-                        layers: [
-                            new ol.layer.Tile({
-                                source: new ol.source.OSM(),
-                            })
-                        ],
-                        view: new ol.View({
-                            center: coords,
-                            zoom: 15
-                        })
-                    });
 
-                    const marker = new ol.Feature({
-                        geometry: new ol.geom.Point(coords),
-                    });
-
-                    const markerStyle = new ol.style.Style({
-                        image: new ol.style.Icon({
-                            anchor: [0.5, 1],
-                            src: 'https://openlayers.org/en/v4.6.5/examples/data/icon.png',
-                        }),
-                    });
-
-                    marker.setStyle(markerStyle);
-
-                    const vectorSource = new ol.source.Vector({
-                        features: [marker]
-                    });
-
-                    const markerLayer = new ol.layer.Vector({
-                        source: vectorSource
-                    });
-
-                    map.addLayer(markerLayer);
-
-                    // Ensure map renders correctly after being made visible
-                    setTimeout(() => {
-                        map.updateSize();
-                    }, 300);
-
-                }, () => {
-                    alert("Failed to fetch your location.");
-                });
-            } else {
-                alert("Geolocation not supported by this browser.");
-            }
-        }
-    </script>
+</body>
+</html>
