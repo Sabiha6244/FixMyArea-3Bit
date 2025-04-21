@@ -46,46 +46,49 @@ $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
-            background-color: #1e1e2f;
+            background-color:rgb(81, 81, 93);
             color: #fff;
             font-family: 'Segoe UI', sans-serif;
         }
         header {
-            background: #2d2d44;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background:rgb(39, 39, 45);
+            padding: 10px 10px;
+            border-radius: 40px;
+            padding: 30px;
+            width: 20%;
         }
         header a {
             color: #fff;
             text-decoration: none;
             background: #4c4cff;
-            padding: 8px 16px;
+            padding: 10px 14px;
             border-radius: 5px;
         }
         h1, h2 {
             color:whitesmoke;
         }
         .container {
-            padding: 20px 40px;
+            padding: 20px 30px;
         }
         .card {
-            background: #2b2b3d;
+            background:rgb(33, 33, 36);
             border-radius: 10px;
-            padding: 20px;
+            padding: 30px;
+            width: 60%;
             margin-bottom: 20px;
+            
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
         .card img {
-            max-width: 100%;
+            max-width: 50%;
             height: auto;
+            
             border-radius: 8px;
             margin-top: 10px;
         }
         .btn {
             display: inline-block;
-            background: #4c4cff;
+            background:rgb(66, 66, 73);
             color: #fff;
             padding: 8px 12px;
             border-radius: 5px;
@@ -119,8 +122,8 @@ $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="card">
                     <h3><?= htmlspecialchars($job['title']) ?></h3>
                     <p><?= nl2br(htmlspecialchars($job['description'])) ?></p>
-                    <?php if ($job['image_path']): ?>
-                        <img src="../3Bit/uploads/<?= htmlspecialchars($job['image_path']) ?>" alt="Issue image">
+                    <?php if ($job['photo_path']): ?>
+                        <img src="/3Bit/<?= htmlspecialchars($job['photo_path']) ?>" alt="Issue image">
                     <?php endif; ?>
                     <p><strong>Location:</strong> <?= htmlspecialchars($job['location']) ?></p>
                     <p><strong>Status:</strong> <?= ucfirst($job['status']) ?></p>

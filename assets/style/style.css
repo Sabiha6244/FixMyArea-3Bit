@@ -360,16 +360,16 @@ body {
 }
 
 .latest-reports li {
-    background: #fff;
+    background: darkgrey;
     padding: 10px 15px;
-    border-left: 5px solid #2980b9;
+    border-left: 5px solid #6f93ab;
     margin-bottom: 10px;
     border-radius: 5px;
 }
 
 .latest-reports a {
     text-decoration: none;
-    color: #2980b9;
+    color: #062543;
     font-weight: bold;
 }
 
@@ -830,7 +830,7 @@ body.dashboard {
 }
 
 .issue-actions button {
-    background-color: #00aaff;
+    background-color: #999;
     color: white;
     border: none;
     padding: 6px 12px;
@@ -859,10 +859,10 @@ body.dashboard {
 }
 
 h2.month-title {
-    border-left: 5px solid #00aaff;
+    border-left: 5px solid #1f6391;
     padding-left: 10px;
     margin-top: 30px;
-    color: #00aaff;
+    color: #6f93ab;
 }
 
 .issue-thumbnail {

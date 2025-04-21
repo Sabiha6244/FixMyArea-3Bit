@@ -35,7 +35,7 @@ $issue = $result->fetch_assoc();
     <style>
         body {
             background-color: #2e2e2e;
-            color: white;
+            color: whitesmoke;
         }
 
         .sidebar {
@@ -71,7 +71,7 @@ $issue = $result->fetch_assoc();
         }
 
         .main {
-            margin-left: 270px;
+            margin-left: 280px;
             padding: 20px;
         }
 
@@ -96,13 +96,13 @@ $issue = $result->fetch_assoc();
         }
 
         .btn-custom {
-            background-color: #007bff;
+            background-color:rgb(31, 31, 32);
             border: none;
             color: white;
         }
 
         .btn-custom:hover {
-            background-color: #0056b3;
+            background-color:rgb(54, 56, 57);
         }
     </style>
 </head>

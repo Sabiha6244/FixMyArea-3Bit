@@ -38,7 +38,7 @@ if ($userEmail) {
 
             <?php if ($userRole): ?>
                 <?php if ($userRole === 'citizen'): ?>
-                    <a href="dashboard/citizen.php">Citizen Dashboard</a>
+                    <a href="profile_setup.php">Edit Your Profile</a>
                 <?php elseif ($userRole === 'service_provider'): ?>
                     <a href="dashboard/provider.php">Provider Dashboard</a>
                 <?php elseif ($userRole === 'admin'): ?>

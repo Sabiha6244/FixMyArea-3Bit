@@ -41,7 +41,8 @@ $inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In 
         }
 
         .dashboard h2 {
-            margin-bottom: 1rem;
+            margin-bottom: 4rem;
+            color: whitesmoke;
         }
 
         .stats-grid {
@@ -51,49 +52,52 @@ $inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In 
         }
 
         .stat-card {
-            background-color: #f7f7f7;
-            padding: 1.5rem;
+            background-color: darkgrey;
+            padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+        .dashboard h3{
+            margin-bottom: 2rem;
+        }
 
         .stat-card h3 {
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             color: #333;
         }
 
         .stat-card span {
-            font-size: 2rem;
+            font-size: 4rem;
             font-weight: bold;
-            color: #2d89ef;
+            color:#333;
         }
 
         .quick-links {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
         }
 
         .quick-links a {
             display: inline-block;
-            margin-right: 1rem;
-            margin-bottom: 1rem;
-            padding: 0.7rem 1.2rem;
-            background-color: #2d89ef;
+            margin-right: 3rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.6rem;
+            background-color:rgb(3, 8, 14);
             color: #fff;
             border-radius: 5px;
             text-decoration: none;
         }
 
         .quick-links a:hover {
-            background-color: #1b5fad;
+            background-color:rgb(113, 117, 121);
         }
 
         .logout {
-            margin-top: 2rem;
+            margin-top: 3rem;
         }
 
         .logout a {
-            color: red;
+            color: whitesmoke;
             text-decoration: none;
         }
     </style>

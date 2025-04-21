@@ -86,7 +86,7 @@ $result = $conn->query($sql);
 
         .card {
             background-color: #444;
-            color: white;
+            color: whitesmoke;
             border: none;
         }
 
@@ -95,17 +95,20 @@ $result = $conn->query($sql);
         }
 
         .btn-custom {
-            background-color: #007bff;
+            background-color:rgb(40, 40, 41);
             border: none;
             color: white;
         }
 
         .btn-custom:hover {
-            background-color: #0056b3;
+            background-color:rgb(68, 70, 73);
         }
 
         .action-btns a {
             margin-right: 10px;
+            background-color:rgb(68, 70, 73);
+            
+        
         }
     </style>
 </head>

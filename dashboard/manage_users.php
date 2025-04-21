@@ -35,30 +35,34 @@ $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../assets/style/style.css">
     <style>
         .manage-users {
-            padding: 2rem;
+            padding: 1rem;
         }
 
         .manage-users h2 {
-            margin-bottom: 1.5rem;
+            margin-bottom: 3rem;
+            color: whitesmoke;
+            font-size: 2.5rem;
         }
 
         .search-box {
-            margin-bottom: 1.5rem;
+            margin-bottom: 3rem;
+            
         }
 
         .search-box input[type="text"] {
-            padding: 0.5rem;
-            width: 250px;
-            margin-right: 0.5rem;
-            border-radius: 4px;
+            padding: 0.8rem;
+            width: 300px;
+            margin-right: 1rem;
+            border-radius: 4.5px;
             border: 1px solid #ccc;
         }
 
         .search-box button {
-            padding: 0.5rem 1rem;
-            background-color: #2d89ef;
+            padding: 0.8rem 1.2rem;
+            background-color:rgb(83, 87, 90);
             border: none;
-            color: white;
+            color: whitesmoke;
+            font-size: 1.2rem;
             border-radius: 4px;
             cursor: pointer;
         }
@@ -73,10 +77,11 @@ $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
             border: 1px solid #ccc;
             padding: 0.8rem;
             text-align: center;
+            color: whitesmoke;
         }
 
         .users-table th {
-            background-color: #f0f0f0;
+            background-color:darkslategray;
         }
 
         .action-btn {
@@ -87,12 +92,12 @@ $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .edit-btn {
-            background-color: #4CAF50;
+            background-color: darkgray;
             color: white;
         }
 
         .delete-btn {
-            background-color: #f44336;
+            background-color:darkslategrey;
             color: white;
         }
 
@@ -100,7 +105,8 @@ $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
             display: inline-block;
             margin-top: 2rem;
             text-decoration: none;
-            color: #2d89ef;
+            color:whitesmoke;
+            font-size: 1.8rem;
         }
 
         .back-link:hover {

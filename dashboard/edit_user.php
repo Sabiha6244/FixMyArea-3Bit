@@ -61,7 +61,7 @@ if (!$user) {
     <link rel="stylesheet" href="../assets/style/style.css">
 </head>
 <body>
-    <div class="main-content" style="padding: 20px; max-width: 600px; margin: auto;">
+    <div class="main-content" style="padding: 20px; max-width: 600px; margin: auto; color:whitesmoke;font-size:1.8rem;">
         <h2>Edit User</h2>
         <form method="POST">
             <label>Name:</label><br>
