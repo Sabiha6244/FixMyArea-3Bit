@@ -31,11 +31,14 @@ $divisionId = $_POST['division'] ?? '';
 $districtId = $_POST['district'] ?? '';
 $cityId     = $_POST['city'] ?? '';
 $upazilaId  = $_POST['upazila'] ?? '';
+$postcodeId = $_POST['postcode'] ?? '';
+
 
 $division = getNameFromJson('includes/bangladesh_geojson/bd-divisions.json', 'id', 'name', $divisionId, 'divisions');
 $district = getNameFromJson('includes/bangladesh_geojson/bd-districts.json', 'id', 'name', $districtId, 'districts');
 $city = getNameFromJson('includes/bangladesh_geojson/dhaka-city.json', 'id', 'name', $cityId); // no rootKey if it's a flat array
 $upazila = getNameFromJson('includes/bangladesh_geojson/bd-upazilas.json', 'id', 'name', $upazilaId); // same here
+$postcode = getNameFromJson('includes/bangladesh_geojson/bd-postcodes.json', 'id', 'name', $postcodeId); // same here
 
 // Handle profile picture upload
 $profile_picture_path = null;

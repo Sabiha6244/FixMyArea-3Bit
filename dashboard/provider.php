@@ -1,35 +1,33 @@
 <?php
-// dashboard/provider.php
 session_start();
 require_once("../includes/config.php");
 
-// Check if user is logged in and is an admin
 $userEmail = $_SESSION["userLoggedIn"] ?? null;
-$userRole = null;
 
-if ($userEmail) {
-    $query = $con->prepare("SELECT role FROM users WHERE email = ?");
-    $query->execute([$userEmail]);
-    $userRole = $query->fetchColumn();
-}
-
-if ($userRole !== 'service_provider') {
+if (!$userEmail) {
     header("Location: ../index.php");
     exit();
 }
 
-// Get user ID
-$stmt = $con->prepare("SELECT id FROM users WHERE email = ?");
-$stmt->execute([$userEmail]);
-$user_id = $stmt->fetchColumn();
+// Check user role
+$query = $con->prepare("SELECT id, role FROM users WHERE email = ?");
+$query->execute([$userEmail]);
+$user = $query->fetch(PDO::FETCH_ASSOC);
 
-// Check if provider profile exists
+if (!$user || $user['role'] !== 'service_provider') {
+    header("Location: ../index.php");
+    exit();
+}
+
+$user_id = $user['id'];
+
+// Get provider info
 $stmt = $con->prepare("SELECT * FROM service_providers WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $providerProfile = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Fetch assigned service requests using PDO
-$sql = "SELECT sr.*, i.title, i.description, i.photo_path, i.location
+// Get assigned jobs
+$sql = "SELECT sr.*, i.title, i.description, i.photo_path, i.location, sr.issue_id, sr.admin_id
         FROM service_requests sr
         JOIN issues i ON sr.issue_id = i.id
         WHERE sr.provider_id = ?";
@@ -40,62 +38,73 @@ $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Service Provider Dashboard</title>
+    <title>Provider Dashboard</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
-            background-color:rgb(81, 81, 93);
+            background-color: #2f2f39;
             color: #fff;
             font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
         }
+
         header {
-            background:rgb(39, 39, 45);
-            padding: 10px 10px;
-            border-radius: 40px;
-            padding: 30px;
-            width: 20%;
+            background: #1e1e25;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-        header a {
+
+        header h1 {
+            margin: 0;
             color: #fff;
-            text-decoration: none;
-            background: #4c4cff;
-            padding: 10px 14px;
-            border-radius: 5px;
         }
-        h1, h2 {
-            color:whitesmoke;
-        }
+
         .container {
-            padding: 20px 30px;
+            padding: 30px 50px;
         }
+
         .card {
-            background:rgb(33, 33, 36);
-            border-radius: 10px;
-            padding: 30px;
-            width: 60%;
+            background: #24242c;
+            border-radius: 12px;
+            padding: 25px;
             margin-bottom: 20px;
-            
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
         }
+
         .card img {
-            max-width: 50%;
-            height: auto;
-            
+            max-width: 100%;
             border-radius: 8px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
+
         .btn {
-            display: inline-block;
-            background:rgb(66, 66, 73);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 5px;
+            background-color: #4c4cff;
+            color: white;
+            padding: 10px 16px;
             text-decoration: none;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #3b3bd1;
+        }
+
+        h2,
+        h3 {
+            margin-top: 0;
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>Provider Dashboard</h1>
@@ -105,14 +114,16 @@ $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
         <?php if (!$providerProfile): ?>
             <div class="card">
                 <h2>Complete Your Provider Profile</h2>
-                <p>You have not submitted your provider details yet.</p>
+                <p>Please complete your service provider information to begin receiving tasks.</p>
                 <a href="../register_provider.php" class="btn">Fill Provider Info</a>
             </div>
         <?php else: ?>
             <div class="card">
                 <h2>Welcome, <?= htmlspecialchars($providerProfile['company_name']) ?></h2>
-                <p>Service: <?= htmlspecialchars($providerProfile['service_type']) ?> | Area: <?= htmlspecialchars($providerProfile['service_area']) ?></p>
-                <p>Status: <?= $providerProfile['verified'] ? "✅ Verified" : "⏳ Awaiting Verification" ?></p>
+                <p><strong>Service:</strong> <?= htmlspecialchars($providerProfile['service_type']) ?> <br>
+                    <strong>Area:</strong> <?= htmlspecialchars($providerProfile['service_area']) ?> <br>
+                    <strong>Status:</strong> <?= $providerProfile['verified'] ? "✅ Verified" : "⏳ Pending Verification" ?>
+                </p>
             </div>
         <?php endif; ?>
 
@@ -126,14 +137,20 @@ $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
                         <img src="/3Bit/<?= htmlspecialchars($job['photo_path']) ?>" alt="Issue image">
                     <?php endif; ?>
                     <p><strong>Location:</strong> <?= htmlspecialchars($job['location']) ?></p>
+                    
+
                     <p><strong>Status:</strong> <?= ucfirst($job['status']) ?></p>
+                    <a class="btn" href="../chat.php?sender_id=<?= $user_id ?>&receiver_id=<?= $job['admin_id'] ?>&issue_id=<?= $job['issue_id'] ?>">
+                        Chat with Admin
+                    </a>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <div class="card">
-                <p>No jobs assigned to you yet.</p>
+                <p>No jobs have been assigned to you yet.</p>
             </div>
         <?php endif; ?>
     </div>
 </body>
+
 </html>

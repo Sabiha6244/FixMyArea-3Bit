@@ -4,14 +4,25 @@
 session_start();
 require_once("includes/config.php");
 
-// Check if user is logged in and get role
+// Check if user is logged in
 $userEmail = $_SESSION["userLoggedIn"] ?? null;
 $userRole = null;
+$userId = null;
 
 if ($userEmail) {
-    $query = $con->prepare("SELECT role FROM users WHERE email = ?");
+    // Fetch user ID and role using the email
+    $query = $con->prepare("SELECT id, role FROM users WHERE email = ?");
     $query->execute([$userEmail]);
-    $userRole = $query->fetchColumn();
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $userId = $user['id'];
+        $userRole = $user['role'];
+
+        // Store both in session
+        $_SESSION["user_id"] = $userId;
+        $_SESSION["role"] = $userRole;
+    }
 }
 ?>
 
@@ -33,16 +44,17 @@ if ($userEmail) {
         <img src="assets/images/logo.png" title="Logo" alt="Site Logo" />
         <nav>
             <a href="index.php">Home</a>
-            <a href="report.php">Report an Issue</a>
-            <a href="issues.php">Track Issues</a>
 
             <?php if ($userRole): ?>
                 <?php if ($userRole === 'citizen'): ?>
+                    <a href="report.php">Report an Issue</a>
                     <a href="profile_setup.php">Edit Your Profile</a>
                 <?php elseif ($userRole === 'service_provider'): ?>
                     <a href="dashboard/provider.php">Provider Dashboard</a>
+                    <a href="profile_setup.php">Edit Your Profile</a>
                 <?php elseif ($userRole === 'admin'): ?>
                     <a href="dashboard/admin.php">Admin Dashboard</a>
+                    <a href="issues.php">Track Issues</a>
                 <?php endif; ?>
                 <a href="logout.php">Logout</a>
             <?php else: ?>

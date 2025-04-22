@@ -52,6 +52,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Manage Providers - Admin Dashboard | FixMyArea</title>
@@ -115,7 +116,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             margin-left: 220px;
             padding: 2rem;
             width: 100%;
-            background-color:  0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: 0 2px 5px rgba(0, 0, 0, 0.1);
             min-height: 100vh;
         }
 
@@ -130,10 +131,11 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background: darkgrey;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
         }
 
-        th, td {
+        th,
+        td {
             padding: 14px 16px;
             text-align: left;
             border-bottom: 1px solid #eee;
@@ -141,7 +143,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         th {
-            background-color:dimgray;
+            background-color: dimgray;
             color: whitesmoke;
         }
 
@@ -154,7 +156,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             padding: 6px 12px;
             font-size: 14px;
             color: #fff;
-            background-color:rgb(54, 60, 67);
+            background-color: rgb(54, 60, 67);
             border-radius: 5px;
             text-decoration: none;
             margin-right: 5px;
@@ -162,7 +164,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .actions a.delete {
-            background-color:rgb(28, 26, 27);
+            background-color: rgb(28, 26, 27);
         }
 
         .actions a:hover {
@@ -176,6 +178,7 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar -->
@@ -199,43 +202,47 @@ $providers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h2>Manage Service Providers</h2>
 
         <?php if ($providers): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Company Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Service Type</th>
-                    <th>Verified</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($providers as $provider): ?>
-                <tr>
-                    <td><?= $provider['user_id'] ?></td>
-                    <td><?= htmlspecialchars($provider['company_name']) ?></td>
-                    <td><?= htmlspecialchars($provider['email']) ?></td>
-                    <td><?= htmlspecialchars($provider['phone']) ?></td>
-                    <td><?= htmlspecialchars($provider['service_type']) ?></td>
-                    <td><?= $provider['verified'] ? 'Yes' : 'No' ?></td>
-                    <td class="actions">
-                        <?php if ($provider['verified']): ?>
-                            <a href="?action=unverify&id=<?= $provider['user_id'] ?>">Unverify</a>
-                        <?php else: ?>
-                            <a href="?action=verify&id=<?= $provider['user_id'] ?>">Verify</a>
-                        <?php endif; ?>
-                        <a href="?action=delete&id=<?= $provider['user_id'] ?>" class="delete" onclick="return confirm('Are you sure you want to delete this provider?')">Delete</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Company Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Service Type</th>
+                        <th>Verified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($providers as $provider): ?>
+                        <tr>
+                            <td><?= $provider['user_id'] ?></td>
+                            <td><?= htmlspecialchars($provider['company_name']) ?></td>
+                            <td><?= htmlspecialchars($provider['email']) ?></td>
+                            <td><?= htmlspecialchars($provider['phone']) ?></td>
+                            <td><?= htmlspecialchars($provider['service_type']) ?></td>
+                            <td><?= $provider['verified'] ? 'Yes' : 'No' ?></td>
+                            <td class="actions">
+                                <?php if ($provider['verified']): ?>
+
+                                    <a href="verify_provider.php?action=unverify&id=<?= $provider['user_id'] ?>">Unverify</a>
+                                    <?php else: ?>
+                                    <a href="verify_provider.php?id=<?= $provider['user_id'] ?>" class="verify" style="background-color: green;">Verify</a>
+                                    <?php endif; ?>
+
+                                    <a href="?action=delete&id=<?= $provider['user_id'] ?>" class="delete" onclick="return confirm('Are you sure you want to delete this provider?')">Delete</a>
+                                    </td>
+
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         <?php else: ?>
             <div class="no-data">No service providers found.</div>
         <?php endif; ?>
     </div>
 
 </body>
+
 </html>

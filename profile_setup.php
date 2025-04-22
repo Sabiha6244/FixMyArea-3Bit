@@ -1,4 +1,4 @@
-<?php session_start(); 
+<?php session_start();
 
 
 
@@ -159,8 +159,7 @@
                     <img src="assets/images/logo.png" alt="FixMyArea Logo">
                 </div>
                 <nav>
-                    <a href="dashboard.php">Dashboard</a>
-                    <a href="issues.php">Manage Issues</a>
+                    <a href="issues.php">Issues</a>
                     <a href="profile_setup.php" class="active">Profile Setup</a>
                     <a href="logout.php">Logout</a>
                 </nav>
@@ -189,7 +188,7 @@
 
                         <div class="form-group">
                             <label for="city">City Corporation</label>
-                            <select id="city" name="city" >
+                            <select id="city" name="city">
                                 <option value="">Select City Corporation</option>
                             </select>
                         </div>
@@ -198,26 +197,28 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="upazila">Upazila</label>
-                            <select id="upazila" name="upazila" >
+                            <select id="upazila" name="upazila">
                                 <option value="">Select Upazila</option>
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="postcode">Postcode</label>
-                            <select id="postcode" name="postcode" >
-                                <option value="">Select Postcode</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="postcode">Postcode</label>
+                                <select id="postcode" name="postcode" required>
+                                    <option value="">Select Postcode</option>
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="profile_picture">Profile Picture</label>
+                                <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+                            </div>
                         </div>
 
-
-                        <div class="form-group">
-                            <label for="profile_picture">Profile Picture</label>
-                            <input type="file" id="profile_picture" name="profile_picture" accept="image/*" >
-                        </div>
-                    </div>
-
-                    <input type="submit" value="Save Profile">
+                        <input type="submit" value="Save Profile">
                 </form>
             </div>
         </div>
@@ -277,7 +278,7 @@
                 const opt = document.createElement('option');
                 opt.value = dist.id;
                 opt.textContent = dist.name;
-                
+
                 districtSelect.appendChild(opt);
             });
         });

@@ -19,13 +19,17 @@ if (!$user) {
     exit();
 }
 
-$fullAddress = implode(', ', array_filter([
-    $user['upazila'],
-    $user['city_corporation'],
-    $user['district'],
-    $user['division'],
-    $user['postcode']
-]));
+$addressParts = array_filter([
+    'Div: ' . $user['division'],
+    'Dist: ' . $user['district'],
+    'City-Corp: ' . $user['city_corporation'],
+    'Upazila: ' . $user['upazila'],
+    'Post-Code: ' . $user['postcode']
+]);
+
+$fullAddress = implode(', ', $addressParts);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +43,7 @@ $fullAddress = implode(', ', array_filter([
         .main-container {
             margin-left: 220px;
             padding: 30px;
-            background-color:rgb(30, 32, 34);
+            background-color: rgb(30, 32, 34);
             min-height: 100vh;
         }
 
@@ -50,7 +54,7 @@ $fullAddress = implode(', ', array_filter([
             max-width: 800px;
             margin: auto;
             box-shadow: 0 3px 10px rgba(45, 44, 94, 0.05);
-            
+
         }
 
         .profile-header {
@@ -80,7 +84,7 @@ $fullAddress = implode(', ', array_filter([
             display: inline-block;
             margin-top: 5px;
             background-color: whitesmoke;
-            color:rgb(42, 42, 43);
+            color: rgb(42, 42, 43);
             font-size: 14px;
             padding: 2px 10px;
             border-radius: 15px;
@@ -105,7 +109,7 @@ $fullAddress = implode(', ', array_filter([
         }
 
         .edit-btn a {
-            background-color:rgb(36, 37, 39);
+            background-color: rgb(36, 37, 39);
             color: white;
             padding: 10px 25px;
             border-radius: 6px;
@@ -114,7 +118,7 @@ $fullAddress = implode(', ', array_filter([
         }
 
         .edit-btn a:hover {
-            background-color:rgb(22, 23, 23);
+            background-color: rgb(22, 23, 23);
         }
 
         @media (max-width: 768px) {
