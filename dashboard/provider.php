@@ -26,11 +26,15 @@ $stmt = $con->prepare("SELECT * FROM service_providers WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $providerProfile = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Get assigned jobs
-$sql = "SELECT sr.*, i.title, i.description, i.photo_path, i.location, sr.issue_id, sr.admin_id
+// Get assigned jobs with reporter's address
+$sql = "SELECT sr.*, i.title, i.description, i.photo_path, i.location, sr.issue_id, sr.admin_id,
+               u.name AS reporter_name, u.email AS reporter_email, u.phone AS reporter_phone,
+               u.division, u.district, u.city_corporation, u.upazila, u.postcode
         FROM service_requests sr
         JOIN issues i ON sr.issue_id = i.id
+        JOIN users u ON i.citizen_id = u.id
         WHERE sr.provider_id = ?";
+
 $jobStmt = $con->prepare($sql);
 $jobStmt->execute([$user_id]);
 $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -136,14 +140,36 @@ $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php if ($job['photo_path']): ?>
                         <img src="/3Bit/<?= htmlspecialchars($job['photo_path']) ?>" alt="Issue image">
                     <?php endif; ?>
-                    <p><strong>Location:</strong> <?= htmlspecialchars($job['location']) ?></p>
-                    
 
                     <p><strong>Status:</strong> <?= ucfirst($job['status']) ?></p>
-                    <a class="btn" href="../chat.php?sender_id=<?= $user_id ?>&receiver_id=<?= $job['admin_id'] ?>&issue_id=<?= $job['issue_id'] ?>">
+
+                    <p><strong>Reporter Address:</strong><br>
+                        Div: <?= htmlspecialchars($job['division']) ?>,
+                        Dist: <?= htmlspecialchars($job['district']) ?>,
+                        City: <?= htmlspecialchars($job['city_corporation']) ?>,
+                        Upazila: <?= htmlspecialchars($job['upazila']) ?>,
+                        Postcode: <?= htmlspecialchars($job['postcode']) ?>
+                    </p>
+
+                    <p><strong>Reporter Info:</strong><br>
+                        Name: <?= htmlspecialchars($job['reporter_name']) ?><br>
+                        Email: <?= htmlspecialchars($job['reporter_email']) ?><br>
+                        Phone: <?= htmlspecialchars($job['reporter_phone']) ?>
+                    </p>
+
+                    <a class="btn" href="chat.php?sender_id=<?= $user_id ?>&receiver_id=<?= $job['admin_id'] ?>&issue_id=<?= $job['issue_id'] ?>">
                         Chat with Admin
                     </a>
+
+                    <a class="btn" href="https://mail.google.com/mail/?view=cm&fs=1&to=<?= urlencode($job['reporter_email']) ?>&su=Regarding%20Your%20Reported%20Issue%20<?= urlencode($job['title']) ?>&body=Hello%20<?= urlencode($job['reporter_name']) ?>,%0A%0A%20I%20am%20a%20service%20provider%20working%20on%20your%20reported%20issue%20'%20<?= urlencode($job['title']) ?>'%20and%20wanted%20to%20get%20in%20touch%20regarding%20the%20status.%0A%0A%20Issue%20Details%20:%0A%20Description:%20<?= urlencode($job['description']) ?>%0A%0A%20Reporter%20Address:%0A%20Div:%20<?= urlencode($job['division']) ?>,%20Dist:%20<?= urlencode($job['district']) ?>,%20City:%20<?= urlencode($job['city_corporation']) ?>,%20Upazila:%20<?= urlencode($job['upazila']) ?>,%20Postcode:%20<?= urlencode($job['postcode']) ?>%0A%0A%20Best%20Regards,%0A%20Your%20Service%20Provider">
+                        Email Reporter
+                    </a>
+
+
+
+
                 </div>
+
             <?php endforeach; ?>
         <?php else: ?>
             <div class="card">

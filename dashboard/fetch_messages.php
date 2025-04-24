@@ -18,10 +18,12 @@ if (!$senderId || !$receiverId || !$issueId) {
 }
 
 $sql = "
-    SELECT * FROM messages 
-    WHERE issue_id = ? 
-      AND ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)) 
-    ORDER BY timestamp ASC
+    SELECT m.*, u.name AS sender_name, u.profile_picture 
+    FROM messages m 
+    JOIN users u ON m.sender_id = u.id 
+    WHERE m.issue_id = ? 
+      AND ((m.sender_id = ? AND m.receiver_id = ?) OR (m.sender_id = ? AND m.receiver_id = ?)) 
+    ORDER BY m.timestamp ASC
 ";
 
 $stmt = $conn->prepare($sql);
@@ -35,3 +37,4 @@ while ($row = $result->fetch_assoc()) {
 }
 
 echo json_encode($messages);
+?>

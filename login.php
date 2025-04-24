@@ -26,6 +26,7 @@ function getInputValue($name){
         echo htmlspecialchars($_POST[$name]); // Prevent XSS attacks
     }
 }
+
 ?>
 
 <!DOCTYPE html>

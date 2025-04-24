@@ -14,7 +14,7 @@ $message = trim($_POST['message'] ?? '');
 
 if (!$senderId || !$receiverId || !$issueId || empty($message)) {
     http_response_code(400);
-    echo "Missing required fields.";
+    echo json_encode(["error" => "Missing required fields."]);
     exit;
 }
 
@@ -25,13 +25,13 @@ $stmt = $conn->prepare("
 ");
 
 $stmt->bind_param("iiis", $senderId, $receiverId, $issueId, $message);
-$stmt->execute();
+$success = $stmt->execute();
 
-if ($stmt->affected_rows > 0) {
-    echo "Message sent successfully.";
+if ($success) {
+    echo json_encode(["success" => "Message sent successfully."]);
 } else {
     http_response_code(500);
-    echo "Failed to send message.";
+    echo json_encode(["error" => "Failed to send message."]);
 }
 
 $stmt->close();

@@ -1,15 +1,20 @@
 <?php
 session_start();
-$adminId = $_SESSION['user_id'] ?? 0; // Get logged-in admin ID
+$adminId = $_SESSION['user_id'] ?? 0;
 
 $conn = new mysqli("localhost", "root", "", "3bit");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: login.php");
+    exit;
+}
+
 $issueId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Fetch issue and citizen's address
+// Fetch issue and citizen address
 $issueQuery = $conn->prepare("
     SELECT i.*, u.division, u.district, u.city_corporation, u.upazila
     FROM issues i
@@ -45,7 +50,7 @@ $providerQuery->bind_param("ssss", $category, $division, $district, $cityCorp);
 $providerQuery->execute();
 $providers = $providerQuery->get_result();
 
-// Check for partial matches
+// Feedback if no match
 $checkServiceType = $conn->prepare("SELECT * FROM service_providers WHERE service_type = ?");
 $checkServiceType->bind_param("s", $category);
 $checkServiceType->execute();
@@ -59,7 +64,6 @@ $checkLocation->bind_param("sss", $division, $district, $cityCorp);
 $checkLocation->execute();
 $locationMatch = $checkLocation->get_result()->num_rows;
 
-// Feedback message
 $noMatchReason = "";
 if ($providers->num_rows === 0) {
     if (!$serviceTypeMatch && !$locationMatch) {
@@ -73,29 +77,34 @@ if ($providers->num_rows === 0) {
     }
 }
 
-// Handle form submission
+$assignedProviderName = "";
+$assignedProviderId = 0;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $providerId = (int)$_POST['provider_id'];
     $citizenId = $issue['citizen_id'];
-    $paymentAmount = (float)$_POST['payment_amount'];
 
-    // Insert into service_requests with admin_id
-    $stmt = $conn->prepare("INSERT INTO service_requests (citizen_id, provider_id, issue_id, status, payment_status, payment_amount, admin_id) VALUES (?, ?, ?, 'in_progress', 'pending', ?, ?)");
-    $stmt->bind_param("iiidi", $citizenId, $providerId, $issueId, $paymentAmount, $adminId);
+    // Insert into service_requests
+    $stmt = $conn->prepare("INSERT INTO service_requests (citizen_id, provider_id, issue_id, status, payment_status, admin_id) VALUES (?, ?, ?, 'in_progress', 'pending', ?)");
+    $stmt->bind_param("iiii", $citizenId, $providerId, $issueId, $adminId);
     $stmt->execute();
 
     // Update issue
     $conn->query("UPDATE issues SET status = 'in_progress', hired_service_provider_id = $providerId WHERE id = $issueId");
 
-    echo "<script>alert('Task assigned successfully!'); window.location.href='admin.php';</script>";
-    exit;
+    // Get provider name for messaging
+    $providerResult = $conn->query("SELECT company_name FROM service_providers WHERE user_id = $providerId");
+    $providerRow = $providerResult->fetch_assoc();
+    $assignedProviderName = $providerRow['company_name'];
+    $assignedProviderId = $providerId;
+
+    // Flag that assignment happened
+    $taskAssigned = true;
 }
 ?>
 
-
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Assign Task - FixMyArea</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -136,65 +145,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 10px;
             border-radius: 5px;
         }
+
+        .success-box {
+            background-color: #28a745;
+            color: white;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
 <body>
+<div class="container">
+    <h2>Assign Task</h2>
+    <hr>
+    <div class="card p-4">
+        <h4>Issue Title: <?= htmlspecialchars($issue['title']); ?></h4>
+        <p><strong>Description:</strong> <?= htmlspecialchars($issue['description']); ?></p>
+        <p><strong>Category:</strong> <?= htmlspecialchars($issue['category']); ?></p>
+        <p><strong>Reporter Address:</strong> <?= "{$division}, {$district}, {$cityCorp}, {$upazila}" ?></p>
 
-    <div class="container">
-        <h2>Assign Task</h2>
-        <hr>
-        <div class="card p-4">
-            <h4>Issue Title: <?= htmlspecialchars($issue['title']); ?></h4>
-            <p><strong>Description:</strong> <?= htmlspecialchars($issue['description']); ?></p>
-            <p><strong>Category:</strong> <?= htmlspecialchars($issue['category']); ?></p>
-            <p><strong>Reporter Address:</strong> <?= "{$division}, {$district}, {$cityCorp}, {$upazila}" ?></p>
+        <?php if (!empty($noMatchReason)): ?>
+            <div class="alert-custom mb-3"><?= $noMatchReason ?></div>
+        <?php endif; ?>
 
-            <?php if ($noMatchReason): ?>
-                <div class="alert-custom mb-3"><?= $noMatchReason ?></div>
-            <?php endif; ?>
-
+        <?php if (isset($taskAssigned) && $taskAssigned): ?>
+            <div class="success-box">
+                ✅ Task assigned successfully to <strong><?= htmlspecialchars($assignedProviderName) ?></strong>!
+            </div>
+            <br>
+            <button class="btn btn-primary" onclick="messageProvider(<?= $adminId ?>, <?= $assignedProviderId ?>, <?= $issueId ?>)">
+                Message <?= htmlspecialchars($assignedProviderName) ?>
+            </button>
+        <?php else: ?>
             <form method="POST">
                 <div class="form-group">
                     <label for="provider_id">Matching Service Providers:</label>
                     <select class="form-control" name="provider_id" id="provider_id" required>
                         <option value="">Choose Provider</option>
-                        <?php
-                        // Reset result pointer in case it has been used before
-                        $providers->data_seek(0);
-                        while ($row = $providers->fetch_assoc()): ?>
+                        <?php $providers->data_seek(0); ?>
+                        <?php while ($row = $providers->fetch_assoc()): ?>
                             <option value="<?= $row['user_id'] ?>">
                                 <?= htmlspecialchars($row['company_name']) . " ({$row['service_type']}) - {$row['district']}" ?>
                             </option>
                         <?php endwhile; ?>
                     </select>
                 </div>
-
-                <input type="hidden" id="admin_id" value="<?= $adminId ?>">
-                <input type="hidden" id="issue_id" value="<?= $issueId ?>">
-
-                <button type="button" class="btn btn-primary" id="messageBtn">Message Provider</button>
-
-                <script>
-                    document.getElementById("messageBtn").addEventListener("click", function() {
-                        const providerId = document.getElementById("provider_id").value;
-                        const adminId = document.getElementById("admin_id").value;
-                        const issueId = document.getElementById("issue_id").value;
-
-                        if (providerId) {
-                            window.location.href = "chat.php?sender_id=" + adminId + "&receiver_id=" + providerId + "&issue_id=" + issueId;
-                        } else {
-                            alert("Please select a provider first.");
-                        }
-                    });
-                </script>
-
-
-
+                <button type="submit" class="btn btn-custom">Assign Task</button>
             </form>
-        </div>
+        <?php endif; ?>
     </div>
+</div>
 
+<script>
+    function messageProvider(adminId, providerId, issueId) {
+        window.location.href = `chat.php?sender_id=${adminId}&receiver_id=${providerId}&issue_id=${issueId}`;
+    }
+</script>
 </body>
-
 </html>
