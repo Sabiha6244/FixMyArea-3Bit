@@ -148,8 +148,7 @@ $fullAddress = implode(', ', $addressParts);
         <nav>
             <a href="index.php">Home</a>
             <a href="report.php">Report an Issue</a>
-            <a href="issues.php">Track Issues</a>
-
+            
             <a href="logout.php">Logout</a>
         </nav>
         <div class="bottom-text">© <?= date("Y") ?> FixMyArea</div>

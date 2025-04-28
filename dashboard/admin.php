@@ -25,7 +25,7 @@ $totalIssues = $con->query("SELECT COUNT(*) FROM issues")->fetchColumn();
 $totalProviders = $con->query("SELECT COUNT(*) FROM service_providers")->fetchColumn();
 $pendingIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'Pending'")->fetchColumn();
 $resolvedIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'Resolved'")->fetchColumn();
-$inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In Progress'")->fetchColumn();
+$inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In_Progress'")->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -37,11 +37,11 @@ $inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In 
     <link rel="stylesheet" href="../assets/style/style.css">
     <style>
         .dashboard {
-            padding: 2rem;
+            padding: 5rem;
         }
 
         .dashboard h2 {
-            margin-bottom: 4rem;
+            margin-bottom: 1rem;
             color: whitesmoke;
         }
 
@@ -74,13 +74,13 @@ $inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In 
         }
 
         .quick-links {
-            margin-top: 2.5rem;
+            margin-top: 2rem;
         }
 
         .quick-links a {
             display: inline-block;
             margin-right: 3rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             padding: 1rem 1.6rem;
             background-color:rgb(3, 8, 14);
             color: #fff;
@@ -93,7 +93,7 @@ $inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In 
         }
 
         .logout {
-            margin-top: 3rem;
+            margin-top: 1rem;
         }
 
         .logout a {
@@ -109,9 +109,9 @@ $inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In 
         <img src="../assets/images/logo.png" alt="Logo" />
         <nav>
             <a href="../index.php">Home</a>
-            <a href="../report.php">Report an Issue</a>
-            <a href="../issues.php">Track Issues</a>
+            <a href="../profile.php">Edit Profile</a>
             <a href="admin.php">Admin Dashboard</a>
+            <a href="manage_issues.php">View Issues</a>
             <a href="../logout.php">Logout</a>
         </nav>
         <div class="bottom-text">© <?= date("Y") ?> FixMyArea</div>

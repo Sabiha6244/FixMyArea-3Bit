@@ -23,7 +23,6 @@ if ($role !== 'admin') {
 
 // Get user ID from URL
 $userId = $_GET['id'] ?? null;
-
 if (!$userId) {
     header("Location: manage_users.php");
     exit;
@@ -52,33 +51,110 @@ if (!$user) {
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Edit User - FixMyArea Admin</title>
     <link rel="stylesheet" href="../assets/style/style.css">
+    <style>
+        body {
+            background-color:rgb(40, 40, 43);
+            font-family: 'Segoe UI', sans-serif;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .edit-user-container {
+            background-color: #3c3d43;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .edit-user-container h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #ffffff;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            background-color:rgb(10, 10, 10);
+            color: #fff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            background-color: #505378;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color:black;
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color:darkslategray;
+        }
+
+        .btn.secondary {
+            background-color: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
 </head>
 <body>
-    <div class="main-content" style="padding: 20px; max-width: 600px; margin: auto; color:whitesmoke;font-size:1.8rem;">
+    <div class="edit-user-container">
         <h2>Edit User</h2>
         <form method="POST">
-            <label>Name:</label><br>
-            <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required><br><br>
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name" value="<?= htmlspecialchars($user['name']) ?>" required>
 
-            <label>Email:</label><br>
-            <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" value="<?= htmlspecialchars($user['email']) ?>" required>
 
-            <label>Role:</label><br>
-            <select name="role">
+            <label for="role">Role:</label>
+            <select name="role" id="role">
                 <option value="citizen" <?= $user['role'] === 'citizen' ? 'selected' : '' ?>>Citizen</option>
                 <option value="service_provider" <?= $user['role'] === 'service_provider' ? 'selected' : '' ?>>Service Provider</option>
                 <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
-            </select><br><br>
+            </select>
 
-            <button type="submit" class="btn">Update User</button>
-            <a href="manage_users.php" class="btn" style="margin-left: 10px;">Cancel</a>
+            <div class="form-actions">
+                <button type="submit" class="btn">Update</button>
+                <a href="manage_users.php" class="btn secondary">Cancel</a>
+            </div>
         </form>
     </div>
 </body>

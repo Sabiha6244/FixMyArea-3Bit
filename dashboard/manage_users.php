@@ -39,9 +39,9 @@ $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .manage-users h2 {
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
             color: whitesmoke;
-            font-size: 2.5rem;
+            font-size: 2rem;
         }
 
         .search-box {
@@ -121,8 +121,6 @@ $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
         <img src="../assets/images/logo.png" alt="Logo" />
         <nav>
             <a href="../index.php">Home</a>
-            <a href="../report.php">Report an Issue</a>
-            <a href="../issues.php">Track Issues</a>
             <a href="admin.php">Admin Dashboard</a>
             <a href="../logout.php">Logout</a>
         </nav>

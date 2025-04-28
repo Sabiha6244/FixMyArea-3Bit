@@ -20,6 +20,7 @@ $result = $conn->query($sql);
 <head>
     <title>Manage Issues - FixMyArea</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
         body {
             background-color: #2e2e2e;
@@ -121,9 +122,9 @@ $result = $conn->query($sql);
     
     <nav>
         <a href="../index.php">Home</a>
-        <a href="../report.php">Report an Issue</a>
-        <a href="../track.php">Track Issues</a>
         <a href="admin.php">Admin Dashboard</a>
+        <a href="manage_users.php">View User</a>
+        <a href="manage_providers.php">View Provider</a>
         <a href="../logout.php">Logout</a>
         <p style="margin-top: 100px; font-size: 0.9rem;">© 2025 FixMyArea</p>
     </nav>
@@ -152,7 +153,6 @@ $result = $conn->query($sql);
                             <div class="action-btns">
                                 <a href="view_report.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-primary">View Report</a>
                                 <a href="assign_task.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">Assign Task</a>
-                                <a href="track_payment.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">Track Payment</a>
                             </div>
                         </div>
                     </div>

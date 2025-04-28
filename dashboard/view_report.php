@@ -83,9 +83,9 @@ $issue = $result->fetch_assoc();
         }
 
         .card img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            max-width: 40%;
+            border-radius: 10px;
+            margin-bottom: 10px;
         }
 
         .map-container {

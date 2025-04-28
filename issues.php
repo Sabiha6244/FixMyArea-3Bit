@@ -44,6 +44,7 @@ foreach ($issues as $issue) {
             <h1>My Reported Issues</h1>
             <nav>
                 <ul>
+                <li><a href="index.php">Home</a></li>
                     <li><a href="issues.php" class="active">My Issues</a></li>
                     <li><a href="report.php">Report an Issue</a></li>
                     <li><a href="logout.php">Logout</a></li>

@@ -83,9 +83,10 @@ $jobs = $jobStmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .card img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-top: 15px;
+            max-width: 20%;
+            border-radius: 5px;
+            margin-top: 8px;
+            max-height: 10%;
         }
 
         .btn {

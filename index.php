@@ -54,7 +54,7 @@ if ($userEmail) {
                     <a href="profile_setup.php">Edit Your Profile</a>
                 <?php elseif ($userRole === 'admin'): ?>
                     <a href="dashboard/admin.php">Admin Dashboard</a>
-                    <a href="issues.php">Track Issues</a>
+                    <a href="profile.php">Your Profile</a>
                 <?php endif; ?>
                 <a href="logout.php">Logout</a>
             <?php else: ?>

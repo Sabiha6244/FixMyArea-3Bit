@@ -61,7 +61,7 @@ if (!$senderId || !$receiverId || !$issueId) {
         }
 
         .sent {
-            background-color: #28a745;
+            background-color:darkcyan;
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 0;
@@ -102,12 +102,12 @@ if (!$senderId || !$receiverId || !$issueId) {
         }
 
         .input-group .btn {
-            background-color: #28a745;
+            background-color:darkslategray ;
             border: none;
         }
 
         .input-group .btn:hover {
-            background-color: #218838;
+            background-color: darkslategray;
         }
 
     </style>
