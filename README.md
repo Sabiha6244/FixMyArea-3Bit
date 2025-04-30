@@ -26,10 +26,10 @@ This project aims to solve these problems by providing a centralized platform wh
 
 ## Proposed Solution
 ### Technology Stack
-- **Frontend**: React (for dynamic UI and interactive dashboards)
-- **Backend**: PHP (for authentication, service provider management, messaging)
+- **Frontend**: React.js, HTML5, CSS3, Bootstrap 5, JavaScript (with AJAX for asynchronous operations)
+- **Backend**: PHP (handling authentication, issue reporting, service provider management, internal messaging)
 - **Database**: MySQL (for storing users, reports, service providers, messages)
-- **APIs**: Google Maps API (for issue location tracking)
+- **APIs**:  Maps API (for issue location tracking)
 - **Tools**: XAMPP (local development), Visual Studio Code
 
 ### Core Features
@@ -91,6 +91,6 @@ This project aims to solve these problems by providing a centralized platform wh
 
 ## Tools & Resources Needed
 - **Development Tools**: Visual Studio Code, XAMPP
-- **APIs**: Google Maps API
+- **APIs**:  Maps API
 - **Hosting**: A secure web hosting service
 - **Testing**: Cross-browser and mobile responsiveness testing
