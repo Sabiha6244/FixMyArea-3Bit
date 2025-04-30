@@ -94,7 +94,7 @@ if ($userEmail) {
 
         <section class="search-bar">
             <div class="container">
-                <input type="text" id="searchBox" placeholder="Search issues (e.g., potholes, streetlight)">
+                <input type="text" id="searchBox" placeholder="Search Your Reported issues ">
                 <button onclick="searchIssues()">Search</button>
             </div>
         </section>
