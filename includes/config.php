@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-date_default_timezone_set("Europe/London");
+date_default_timezone_set("Asia/Dhaka");
 
 try {
     $con = new PDO("mysql:dbname=3bit;host=localhost", "root", "");

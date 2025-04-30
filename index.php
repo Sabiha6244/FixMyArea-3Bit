@@ -1,103 +1,166 @@
 <?php
-// index.php - Community Issue Tracker Homepage
+// index.php - FixMyArea Homepage
 
 session_start();
 require_once("includes/config.php");
 
-// Check if user is logged in and get role
+// Check if user is logged in
 $userEmail = $_SESSION["userLoggedIn"] ?? null;
 $userRole = null;
+$userId = null;
 
 if ($userEmail) {
-    $query = $con->prepare("SELECT role FROM users WHERE email = ?");
+    // Fetch user ID and role using the email
+    $query = $con->prepare("SELECT id, role FROM users WHERE email = ?");
     $query->execute([$userEmail]);
-    $userRole = $query->fetchColumn();
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $userId = $user['id'];
+        $userRole = $user['role'];
+
+        // Store both in session
+        $_SESSION["user_id"] = $userId;
+        $_SESSION["role"] = $userRole;
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Issue Tracker</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>FixMyArea - Community Issue Tracker</title>
+    <link rel="stylesheet" href="assets/style/style.css">
 </head>
+
 <body>
-    <header>
-        <div class="container">
-            <h1>Community Issue Tracker</h1>
-            <nav>
-                <a href="index.php">Home</a>
-                <a href="report.php">Report an Issue</a>
-                <a href="issues.php">Track Issues</a>
-                
-                <?php if ($userRole): ?>
-                    <div class="dropdown">
-                        <button class="dropbtn">My Account</button>
-                        <div class="dropdown-content">
-                            <?php if ($userRole === 'citizen'): ?>
-                                <a href="dashboard/citizen.php">Citizen Dashboard</a>
-                            <?php elseif ($userRole === 'service_provider'): ?>
-                                <a href="dashboard/provider.php">Service Provider Dashboard</a>
-                            <?php elseif ($userRole === 'admin'): ?>
-                                <a href="dashboard/admin.php">Admin Dashboard</a>
-                            <?php endif; ?>
-                            <a href="logout.php">Logout</a>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <a href="login.php">Login</a>
-                    <a href="register.php">Register</a>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="logo">FixMyArea</div>
+        <img src="assets/images/logo.png" title="Logo" alt="Site Logo" />
+        <nav>
+            <a href="index.php">Home</a>
+
+            <?php if ($userRole): ?>
+                <?php if ($userRole === 'citizen'): ?>
+                    <a href="report.php">Report an Issue</a>
+                    <a href="profile_setup.php">Edit Your Profile</a>
+                <?php elseif ($userRole === 'service_provider'): ?>
+                    <a href="dashboard/provider.php">Provider Dashboard</a>
+                    <a href="profile_setup.php">Edit Your Profile</a>
+                <?php elseif ($userRole === 'admin'): ?>
+                    <a href="dashboard/admin.php">Admin Dashboard</a>
+                    <a href="profile.php">Your Profile</a>
                 <?php endif; ?>
-            </nav>
-        </div>
-    </header>
+                <a href="logout.php">Logout</a>
+            <?php else: ?>
+                <a href="login.php">Login</a>
+                <a href="register.php">Register</a>
+            <?php endif; ?>
+        </nav>
+        <div class="bottom-text">© <?= date("Y") ?> FixMyArea</div>
+    </div>
 
-    <section class="hero">
-        <div class="container">
-            <h2>Report local issues & help improve your community</h2>
-            <p>Use our platform to report potholes, streetlight outages, garbage collection issues, and more.</p>
-            <a href="report.php" class="btn">Report an Issue</a>
-        </div>
-    </section>
+    <!-- Main Content -->
+    <div class="main-content">
+        <section class="hero">
+            <div class="container">
+                <h2>Report, view, or discuss local problems</h2>
+                <h3>(like potholes, streetlight outages, trash collection problems, and more!)</h3>
+                <p> Citizens face difficulties reporting local issues like broken streetlights,
+                    potholes, or garbage disposal. Often, they don’t know where to report,
+                    and the lack of updates makes them feel ignored. Additionally, authorities
+                    struggle to assign service providers and track issue resolution efficiently.
+                    FixMyArea does send your reports directly to your local council,
+                    or whichever other authority is responsible for dealing with a problem.
+                    We wanted to make it easier to report problems in your community,
+                    even if you don’t know who those reports should go to.
+                    So we made FixMyArea.
+                    All you have to do is type in a BD postcode –
+                    or let the site locate you automatically –
+                    and describe your problem.
+                    Then we send your report to the people whose job it is to fix it.
 
-    <section class="search-bar">
-        <div class="container">
-            <input type="text" id="searchBox" placeholder="Search for issues (e.g., potholes, streetlight)">
-            <button onclick="searchIssues()">Search</button>
-        </div>
-    </section>
+                    We also publish them online, so that others in the community can see
+                    what’s already been reported and subscribe to any reports they’re interested in.
+                </p>
+                <a href="report.php" class="btn">Report an Issue</a>
+            </div>
+        </section>
 
-    <section class="latest-reports">
-        <div class="container">
-            <h3>Latest Reported Issues</h3>
-            <ul id="latestIssues">
-                <?php
-                $query = $con->query("SELECT title, category, status FROM issues ORDER BY created_at DESC LIMIT 5");
+        <section class="search-bar">
+            <div class="container">
+                <input type="text" id="searchBox" placeholder="Search Your Reported issues ">
+                <button onclick="searchIssues()">Search</button>
+            </div>
+        </section>
 
-                while ($row = $query->fetch(PDO::FETCH_ASSOC)): ?>
-                    <li>
-                        <strong><?= htmlspecialchars($row['title']) ?></strong> - 
-                        <?= htmlspecialchars($row['category']) ?> 
-                        (Status: <?= htmlspecialchars($row['status']) ?>)
-                    </li>
-                <?php endwhile; ?>
-            </ul>
-        </div>
-    </section>
+        <section class="latest-reports">
+            <div class="container">
+                <h4>Latest Reported Issues</h4>
+                <ul id="latestIssues" class="report-list">
+                    <?php
+                    $query = $con->query("SELECT id, title, category, photo_path, status FROM issues ORDER BY created_at DESC LIMIT 5");
+                    while ($row = $query->fetch(PDO::FETCH_ASSOC)): ?>
+                        <li class="report-item">
+                            <div class="report-image">
+                                <img src="<?= htmlspecialchars($row['photo_path']) ?>"
+                                    alt="<?= htmlspecialchars($row['title']) ?>"
+                                    onclick="openLightbox(this.src)">
+                            </div>
+                            <div class="report-text">
+                                <strong>
+                                    <a href="issues.php?id=<?= htmlspecialchars($row['id']) ?>">
+                                        <?= htmlspecialchars($row['title']) ?>
+                                    </a>
+                                </strong>
+                                - <?= htmlspecialchars($row['category']) ?>
+                                <span class="status <?= strtolower($row['status']) ?>">
+                                    (<?= htmlspecialchars($row['status']) ?>)
+                                </span>
+                            </div>
+                        </li>
+                    <?php endwhile; ?>
+                </ul>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <?= date("Y") ?> Community Issue Tracker | Inspired by FixMyStreet</p>
+            </div>
+        </section>
+
+        <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+            <span class="close-btn">&times;</span>
+            <img id="lightbox-img" src="" alt="Preview">
         </div>
-    </footer>
+
+        <footer>
+            <div class="container">
+                <p>&copy; <?= date("Y") ?> FixMyArea </p>
+            </div>
+        </footer>
+    </div>
 
     <script>
         function searchIssues() {
-            let query = document.getElementById("searchBox").value;
-            window.location.href = "issues.php?search=" + encodeURIComponent(query);
+            const query = document.getElementById("searchBox").value.trim();
+            if (query) {
+                window.location.href = "issues.php?search=" + encodeURIComponent(query);
+            }
         }
     </script>
+    <script>
+        function openLightbox(src) {
+            document.getElementById("lightbox-img").src = src;
+            document.getElementById("lightbox").style.display = "flex";
+        }
+
+        function closeLightbox() {
+            document.getElementById("lightbox").style.display = "none";
+        }
+    </script>
+
 </body>
+
 </html>

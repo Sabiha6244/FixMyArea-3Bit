@@ -1,28 +1,165 @@
 <?php
 // dashboard/admin.php
+
 session_start();
-//require '../config.php';
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Admin') {
-    header("Location: ../login.php");
+require_once("../includes/config.php");
+
+// Check if user is logged in and is an admin
+$userEmail = $_SESSION["userLoggedIn"] ?? null;
+$userRole = null;
+
+if ($userEmail) {
+    $query = $con->prepare("SELECT role FROM users WHERE email = ?");
+    $query->execute([$userEmail]);
+    $userRole = $query->fetchColumn();
+}
+
+if ($userRole !== 'admin') {
+    header("Location: ../index.php");
     exit();
 }
+
+// Get admin statistics
+$totalUsers = $con->query("SELECT COUNT(*) FROM users")->fetchColumn();
+$totalIssues = $con->query("SELECT COUNT(*) FROM issues")->fetchColumn();
+$totalProviders = $con->query("SELECT COUNT(*) FROM service_providers")->fetchColumn();
+$pendingIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'Pending'")->fetchColumn();
+$resolvedIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'Resolved'")->fetchColumn();
+$inProgressIssues = $con->query("SELECT COUNT(*) FROM issues WHERE status = 'In_Progress'")->fetchColumn();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>Admin Dashboard - FixMyArea</title>
+    <link rel="stylesheet" href="../assets/style/style.css">
+    <style>
+        .dashboard {
+            padding: 5rem;
+        }
+
+        .dashboard h2 {
+            margin-bottom: 1rem;
+            color: whitesmoke;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: darkgrey;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .dashboard h3{
+            margin-bottom: 2rem;
+        }
+
+        .stat-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .stat-card span {
+            font-size: 4rem;
+            font-weight: bold;
+            color:#333;
+        }
+
+        .quick-links {
+            margin-top: 2rem;
+        }
+
+        .quick-links a {
+            display: inline-block;
+            margin-right: 3rem;
+            margin-bottom: 1rem;
+            padding: 1rem 1.6rem;
+            background-color:rgb(3, 8, 14);
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .quick-links a:hover {
+            background-color:rgb(113, 117, 121);
+        }
+
+        .logout {
+            margin-top: 1rem;
+        }
+
+        .logout a {
+            color: whitesmoke;
+            text-decoration: none;
+        }
+    </style>
 </head>
+
 <body>
-    <header>
-        <h1>Admin Dashboard</h1>
-        <a href="../logout.php">Logout</a>
-    </header>
-    <section>
-        <h2>Manage Reports</h2>
-        <p>List of reported issues will appear here.</p>
-    </section>
+    <div class="sidebar">
+        <div class="logo">FixMyArea</div>
+        <img src="../assets/images/logo.png" alt="Logo" />
+        <nav>
+            <a href="../index.php">Home</a>
+            <a href="../profile.php">Edit Profile</a>
+            <a href="admin.php">Admin Dashboard</a>
+            <a href="manage_issues.php">View Issues</a>
+            <a href="../logout.php">Logout</a>
+        </nav>
+        <div class="bottom-text">© <?= date("Y") ?> FixMyArea</div>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard">
+            <h2>Welcome, Admin!</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <span><?= $totalUsers ?></span>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Issues</h3>
+                    <span><?= $totalIssues ?></span>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Service Providers</h3>
+                    <span><?= $totalProviders ?></span>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Issues</h3>
+                    <span><?= $pendingIssues ?></span>
+                </div>
+                <div class="stat-card">
+                    <h3>In Progress</h3>
+                    <span><?= $inProgressIssues ?></span>
+                </div>
+                <div class="stat-card">
+                    <h3>Resolved Issues</h3>
+                    <span><?= $resolvedIssues ?></span>
+                </div>
+            </div>
+
+            <div class="quick-links">
+                <h3>Quick Links</h3>
+                <a href="../dashboard/manage_users.php">Manage Users</a>
+                <a href="../dashboard/manage_issues.php">Manage Issues</a>
+                <a href="../dashboard/manage_providers.php">Manage Providers</a>
+            </div>
+
+            <div class="logout">
+                <a href="../logout.php">Logout</a>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
