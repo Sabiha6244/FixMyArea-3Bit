@@ -75,8 +75,8 @@ This project aims to solve these problems by providing a centralized platform wh
 1. **Planning** – Gather user needs and define system requirements.
 2. **Design** – Create UI/UX layouts for issue reporting, provider dashboards, admin controls, and messaging.
 3. **Development**
-   - **Frontend**: React.js, HTML5, CSS3, Bootstrap 5, JavaScript (with AJAX for asynchronous operations)
-   - **Backend**: PHP 8.x (handling authentication, issue reporting, service provider management, internal messaging)
+   - **Frontend**: HTML5, CSS, Bootstrap, JavaScript (with AJAX for asynchronous operations)
+   - **Backend**: PHP (handling authentication, issue reporting, service provider management, internal messaging)
    - **Database**: MySQL to store user data, issue reports, messages, and provider details.
 4. **Testing** – Verify issue submission, provider registration, profile setup, email verification, and messaging functionality.
 5. **Deployment** – Launch the platform on a secure web server.
