@@ -26,7 +26,7 @@ This project aims to solve these problems by providing a centralized platform wh
 
 ## Proposed Solution
 ### Technology Stack
-- **Frontend**: React.js, HTML5, CSS3, Bootstrap 5, JavaScript (with AJAX for asynchronous operations)
+- **Frontend**: HTML5, CSS, Bootstrap , JavaScript (with AJAX for asynchronous operations)
 - **Backend**: PHP (handling authentication, issue reporting, service provider management, internal messaging)
 - **Database**: MySQL (for storing users, reports, service providers, messages)
 - **APIs**:  Maps API (for issue location tracking)
